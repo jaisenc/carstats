@@ -11,8 +11,11 @@ import matplotlib.pyplot as plt
 import matplotlib
 
 from bs4 import BeautifulSoup
+from titlecase import titlecase
 from urllib2 import build_opener, HTTPCookieProcessor
 from pandas.stats.api import ols
+from statsmodels.api import OLS, add_constant
+
 import webbrowser
 
 matplotlib.style.use('ggplot')
@@ -30,30 +33,37 @@ url = 'http://www.autotrader.ca/cars/mercedes-benz/e-class/on/toronto/?prx=100&p
 
 
 class CarStats(object):
-    def __init__(self, url):
+    def __init__(self, url, max_km=200000, max_age=15):
+        # Prase html
+        if 'rcp=' not in url:
+            url += 'rcp=1000'
         url_split = url.split('/')
         opener = build_opener(HTTPCookieProcessor())
         opener.addheaders = [('User-Agent', 'Mozilla/5.0'),
                              ('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8')]
         response = opener.open(url)
         html = response.read()
-
         soup = BeautifulSoup(html, "lxml")
-        self.df = self._parse_html(soup)
+        df = self._parse_html(soup)
+        self.df = df.query('km <= @max_km and age <= @max_age')
+
         self.car_model = '{}_{}_{}'.format(url_split[3], url_split[4], url_split[5])
-        self.name = '{} {}'.format(url_split[4], url_split[5])
-        self.ols_summary = ''
+        self.name = titlecase('{} {}'.format(url_split[4], url_split[5]))
         self.report_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'reports')
+        self.model = None
 
         if not (os.path.isdir(self.report_path)):
             os.mkdir(self.report_path)
 
-    def gen_ols(self, max_km=300000):
-        df_raw = self.df.query("km <= @max_km")
-        res = ols(y=df_raw.price, x=df_raw[['km', 'age']])
-        print res.summary
-        self.ols_summary = res.summary
-        return res
+    def get_df(self):
+        return self.df
+
+    def gen_ols(self):
+        df_raw = self.df.copy()
+        df_scaled = self._normalize(df_raw)
+        self.model = OLS(df_scaled.price, add_constant(df_scaled[['km', 'age']]))
+        print self.model.fit().summary()
+        return self.model
 
     def gen_graph_km_vs_price(self, show=False):
         fig_name = '{}_age_vs_km.png'.format(self.car_model)
@@ -72,18 +82,35 @@ class CarStats(object):
         <p>{ols}</p>
         <img src="{img_1}" alt="Opps...can't display image">
         <img src="{img_2}" alt="Opps...can't display image">
+        <img src="{img_3}" alt="Opps...can't display image">
 
         """.format(report_name=self.name,
-                   ols=self.gen_ols(),
+                   ols=self.gen_ols().fit().summary().as_html(),
                    img_1=os.path.basename(self.gen_graph_age_vs_price(show=False)),
-                   img_2=os.path.basename(self.gen_graph_km_vs_price(show=False)))
+                   img_2=os.path.basename(self.gen_graph_km_vs_price(show=False)),
+                   img_3=os.path.basename(self.gen_boxplot_by_age(show=False)))
         f.write(html)
         f.close()
         if show:
             webbrowser.open('file://' + html_file_path)
 
     def predict(self, age, km, html=True, show=True):
-        pass
+        if self.model == None:
+            self.gen_ols()
+        fitted_model = self.model.fit()
+        km_scaled = self._scaler(km, 'km')
+        age_scaled = self._scaler(age, 'age')
+        pred_scaled = fitted_model.predict([1, km_scaled, age_scaled])
+        pred = self._scaler(pred_scaled, 'price', inverse=True)
+        return pred[0]
+
+    def gen_boxplot_by_age(self, fig_name, show=False, fig_size=(6, 4)):
+        plot_path = os.path.join(self.report_path, fig_name)
+        self.df[['age', 'price']].boxplot(by='age',figsize=fig_size)
+        plt.savefig(plot_path)
+        if show:
+            plt.show()
+        return plot_path
 
     def gen_scatter_plot(self, x, y, fig_name, show=False, figsize=(6, 4)):
         """
@@ -108,7 +135,7 @@ class CarStats(object):
         """
         parse the beautiful soup object into a pandas DataFrame
         :param soup:
-        :return:
+        :return: df
         """
         out = []
         num_skipped = 0
@@ -131,6 +158,25 @@ class CarStats(object):
         df = pd.DataFrame(out, columns=['km', 'price', 'year'])
         df['age'] = datetime.datetime.today().year - df.year
         return df
+
+    def _scaler(self, value, column, inverse=False):
+        means = self.df.mean()
+        stds = self.df.std()
+
+        if inverse:
+            out = (value * stds[column]) + means[column]
+        else:
+            out = (value - means[column]) / stds[column]
+        return out
+
+    @staticmethod
+    def _normalize(df):
+        """
+        Z-score normalization
+        :param df: DataFrame
+        :return: DataFrame
+        """
+        return (df - df.mean()) / df.std()
 
 
 if __name__ == '__main__':
