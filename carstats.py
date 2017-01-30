@@ -13,7 +13,7 @@ import matplotlib
 from bs4 import BeautifulSoup
 from titlecase import titlecase
 from urllib2 import build_opener, HTTPCookieProcessor
-from pandas.stats.api import ols
+from matplotlib.ticker import FuncFormatter
 from statsmodels.api import OLS, add_constant
 
 import webbrowser
@@ -29,7 +29,13 @@ matplotlib.style.use('ggplot')
 # toyota camry
 # url = 'http://www.autotrader.ca/cars/toyota/camry/on/toronto/?prx=100&prv=Ontario&loc=m5p3h6&sts=New-Used&hprc=True&wcp=True&rcs=0&rcp=1000'
 # mercedes e class
-url = 'http://www.autotrader.ca/cars/mercedes-benz/e-class/on/toronto/?prx=100&prv=Ontario&loc=m5p3h6&sts=New-Used&hprc=True&wcp=True&rcs=0&rcp=1000'
+# url = 'http://www.autotrader.ca/cars/mercedes-benz/e-class/on/toronto/?prx=100&prv=Ontario&loc=m5p3h6&sts=New-Used&hprc=True&wcp=True&rcs=0&rcp=1000'
+
+
+def num_comma(x, pos):
+    return '{0:,.0f}'.format(x)
+
+FORMATTER_COMMA = FuncFormatter(num_comma)
 
 
 class CarStats(object):
@@ -104,10 +110,12 @@ class CarStats(object):
         pred = self._scaler(pred_scaled, 'price', inverse=True)
         return pred[0]
 
-    def gen_boxplot_by_age(self, fig_name, show=False, fig_size=(6, 4)):
+    def gen_boxplot_by_age(self, show=False, fig_size=(6, 4)):
+        fig_name = self.car_model + "_boxplot_age.png"
         plot_path = os.path.join(self.report_path, fig_name)
-        self.df[['age', 'price']].boxplot(by='age',figsize=fig_size)
-        plt.savefig(plot_path)
+        ax = self.df[['age', 'price']].boxplot(by='age',figsize=fig_size)
+        ax.yaxis.set_major_formatter(FORMATTER_COMMA)
+        plt.savefig(plot_path,transparent=True,bbox_inches='tight')
         if show:
             plt.show()
         return plot_path
@@ -124,8 +132,10 @@ class CarStats(object):
         :return:
         """
         plot_path = os.path.join(self.report_path, fig_name)
-        self.df.plot(x=x, y=y, kind='scatter', figsize=figsize, title='{} vs {}'.format(x, y))
-        plt.savefig(plot_path)
+        ax = self.df.plot(x=x, y=y, kind='scatter', figsize=figsize, title='{} vs {}'.format(x, y))
+        ax.yaxis.set_major_formatter(FORMATTER_COMMA)
+        plt.autoscale(enable=True, axis='x', tight=True)
+        plt.savefig(plot_path,transparent=True,bbox_inches='tight')
         if show:
             plt.show()
         return plot_path
