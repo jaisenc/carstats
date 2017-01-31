@@ -21,13 +21,13 @@ import webbrowser
 matplotlib.style.use('ggplot')
 
 # mercedes c300
-# url = 'http://www.autotrader.ca/cars/mercedes-benz/c-class/on/toronto/?prx=100&prv=Ontario&loc=m5p3h6&sts=New-Used&hprc=True&wcp=True&rcs=0&rcp=1000'
+# url = 'http://www.autotrader.ca/cars/mercedes-benz/c-class/on/toronto/?prx=100&prv=Ontario&loc=m5j2j2&sts=New-Used&hprc=True&wcp=True&rcs=0&rcp=1000'
 # mercedes glk
-# url = 'http://www.autotrader.ca/cars/mercedes-benz/glk-class/on/toronto/?prx=100&prv=Ontario&loc=m5p3h6&sts=New-Used&hprc=True&wcp=True&rcs=0&rcp=1000'
+# url = 'http://www.autotrader.ca/cars/mercedes-benz/glk-class/on/toronto/?prx=100&prv=Ontario&loc=m5j2j2&sts=New-Used&hprc=True&wcp=True&rcs=0&rcp=1000'
 # lexus rx (RX 350)
-# url = 'http://www.autotrader.ca/cars/lexus/rx/on/toronto/?prx=100&prv=Ontario&loc=m5p3h6&sts=New-Used&hprc=True&wcp=True&rcs=0&rcp=1000'
+# url = 'http://www.autotrader.ca/cars/lexus/rx/on/toronto/?prx=100&prv=Ontario&loc=m5j2j2&sts=New-Used&hprc=True&wcp=True&rcs=0&rcp=1000'
 # toyota camry
-# url = 'http://www.autotrader.ca/cars/toyota/camry/on/toronto/?prx=100&prv=Ontario&loc=m5p3h6&sts=New-Used&hprc=True&wcp=True&rcs=0&rcp=1000'
+# url = 'http://www.autotrader.ca/cars/toyota/camry/on/toronto/?prx=100&prv=Ontario&loc=m5j2j2&sts=New-Used&hprc=True&wcp=True&rcs=0&rcp=1000'
 # mercedes e class
 # url = 'http://www.autotrader.ca/cars/mercedes-benz/e-class/on/toronto/?prx=100&prv=Ontario&loc=m5j2j2&sts=New-Used&hprc=True&wcp=True&rcs=0&rcp=1000'
 
@@ -42,7 +42,7 @@ class CarStats(object):
     def __init__(self, url, max_km=200000, max_age=15):
         # Prase html
         if 'rcp=' not in url:
-            url += 'rcp=1000'
+            url += '&rcs=0&rcp=1000'
         url_split = url.split('/')
         opener = build_opener(HTTPCookieProcessor())
         opener.addheaders = [('User-Agent', 'Mozilla/5.0'),
