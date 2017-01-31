@@ -5,9 +5,11 @@ The package pulls live data from [AutoTrader](http://www.autotrader.ca/) and pro
 
 ## Example
 
-To run a 
+Run analysis on all postings of Mercedes E-Class near downtown Toronto
 
 ```python carstats```
+
+
 
 ## Quick Start
 
@@ -18,5 +20,7 @@ IPython Jupter Notebook
 -   pandas
 -   statsmodel
 -   matplotlib
+-   titlecase
+
 
 
