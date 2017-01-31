@@ -24,6 +24,8 @@ http://www.autotrader.ca/cars/audi/a4/on/toronto/?prx=100&prv=Ontario&loc=m5j2j2
 
 ![url](https://github.com/jaisenc/carstats/blob/master/docs/autotrader_link.PNG)
 
+Then create a CarStats object with the url and generate a html report.
+
 ```python
 from carstats import CarStats
 audi_a4 = CarStats(
