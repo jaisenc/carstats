@@ -29,7 +29,7 @@ matplotlib.style.use('ggplot')
 # toyota camry
 # url = 'http://www.autotrader.ca/cars/toyota/camry/on/toronto/?prx=100&prv=Ontario&loc=m5p3h6&sts=New-Used&hprc=True&wcp=True&rcs=0&rcp=1000'
 # mercedes e class
-# url = 'http://www.autotrader.ca/cars/mercedes-benz/e-class/on/toronto/?prx=100&prv=Ontario&loc=m5p3h6&sts=New-Used&hprc=True&wcp=True&rcs=0&rcp=1000'
+# url = 'http://www.autotrader.ca/cars/mercedes-benz/e-class/on/toronto/?prx=100&prv=Ontario&loc=m5j2j2&sts=New-Used&hprc=True&wcp=True&rcs=0&rcp=1000'
 
 
 def num_comma(x, pos):
@@ -191,5 +191,5 @@ class CarStats(object):
 
 if __name__ == '__main__':
     mercedes_e = CarStats(
-        'http://www.autotrader.ca/cars/mercedes-benz/e-class/on/toronto/?prx=100&prv=Ontario&loc=m5p3h6&sts=New-Used&hprc=True&wcp=True&rcs=0&rcp=1000')
+        'http://www.autotrader.ca/cars/mercedes-benz/e-class/on/toronto/?prx=100&prv=Ontario&loc=m5j2j2&sts=New-Used&hprc=True&wcp=True&rcs=0&rcp=1000')
     mercedes_e.html_report(show=True)
