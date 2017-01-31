@@ -11,7 +11,7 @@ Run analysis on all postings of Mercedes E-Class near downtown Toronto
  python carstats
 ```
 
-![regression](https://github.com/jaisenc/carstats/blob/master/docs/regression.png)
+![regression](https://github.com/jaisenc/carstats/blob/master/docs/regression.PNG)
 ![scatter_age](https://github.com/jaisenc/carstats/blob/master/docs/cars_mercedes-benz_e-class_age_vs_km.png)
 ![scatter_km](https://github.com/jaisenc/carstats/blob/master/docs/cars_mercedes-benz_e-class_age_vs_price.png)
 ![boxplot_age](https://github.com/jaisenc/carstats/blob/master/docs/cars_mercedes-benz_e-class_boxplot_age.png)
@@ -22,7 +22,7 @@ First get the url for your search on [AutoTrader](http://www.autotrader.ca/). Fo
 
 http://www.autotrader.ca/cars/audi/a4/on/toronto/?prx=100&prv=Ontario&loc=m5j2j2&sts=New-Used&hprc=True&wcp=True&inMarket=basicSearch
 
-![url](https://github.com/jaisenc/carstats/blob/master/docs/autotrader_link.png)
+![url](https://github.com/jaisenc/carstats/blob/master/docs/autotrader_link.PNG)
 
 ```python
 from carstats import CarStats
